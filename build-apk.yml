@@ -1,9 +1,10 @@
 name: Build Android APK
 
-on:
+"on":
   workflow_dispatch:
   push:
-    branches: [main, master]
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -11,6 +12,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -26,35 +28,27 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Unpack app source
-        run: |
-          mkdir appsrc
-          unzip onlyfans-price-tracker-android-mvp-0.1.0.zip -d appsrc
-
       - name: Install dependencies
-        working-directory: appsrc
         run: npm install
 
-      - name: Add Android platform if missing
-        working-directory: appsrc
-        run: |
-          if [ ! -d android ]; then
-            npx cap add android
-          fi
+      - name: Build web app
+        run: npm run build
+
+      - name: Add Android platform
+        run: npx cap add android
 
       - name: Sync Capacitor
-        working-directory: appsrc
         run: npx cap sync android
 
       - name: Build debug APK
-        working-directory: appsrc/android
+        working-directory: android
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug
 
-      - name: Upload APK artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: onlyfans-price-tracker-debug-apk
-          path: appsrc/android/app/build/outputs/apk/debug/app-debug.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
