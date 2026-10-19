@@ -29,7 +29,7 @@ jobs:
           java-version: "17"
 
       - name: Unpack app source
-        run: unzip -o onlyfans-price-tracker-android-mvp-0.1.0.zip -d appsrc
+        run: unzip -o onlyfans-price-tracker-android-mvp-0.1.1-fixed.zip -d appsrc
 
       - name: Install dependencies
         working-directory: appsrc
